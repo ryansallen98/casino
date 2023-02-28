@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const Datastore = require('nedb');
 const axios = require('axios')
 const uri = 'https://bux.digital/v1/pay/?';
+const ecashaddr = require('ecashaddrjs');
 const app = express();
 
 
