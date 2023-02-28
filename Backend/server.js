@@ -224,8 +224,8 @@ async function postIpn(req, res) {
       } else {
         paidDB.insert(ipn)
         console.log('Invoice Find: ', docs)
-        console.log(docs.network)
-        usersDB.find({ username: docs.user }, (err, docs) => {
+        console.log(docs[0].user)
+        usersDB.find({ username: docs[0].user }, (err, docs) => {
           if (err) {
             // Handle error
             console.log(err);
