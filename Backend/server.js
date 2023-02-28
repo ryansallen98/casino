@@ -231,6 +231,7 @@ async function postIpn(req, res) {
         console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn)
+        console.log(docs)
       }
     });
 
