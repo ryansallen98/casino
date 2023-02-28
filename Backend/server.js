@@ -231,7 +231,7 @@ async function postIpn(req, res) {
         console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn)
-        console.log(docs.user)
+        console.log(docs)
         usersDB.find({ username: docs.user }, function (err, docs) { console.log(docs) })
         usersDB.update({ username: docs.user }, { $inc: { bonusBalance: 2 } }, {}, (err, numReplaced) => {
           if (err) {
