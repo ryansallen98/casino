@@ -231,7 +231,14 @@ async function postIpn(req, res) {
         console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn)
-        console.log(docs)
+        console.log(docs.username)
+        db.update({ user: docs.username }, { $inc: { bonusBalance: 2 } }, {}, (err, numReplaced) => {
+          if (err) {
+            // Handle error
+          } else {
+            console.log(`Updated ${numReplaced} document(s)`);
+          }
+        });
       }
     });
 
