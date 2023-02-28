@@ -131,9 +131,9 @@ app.post('/deposit', async (req, res) => {
     order_key: code,
     merchant_addr: 'etoken:qp468rr6gggl36hvz297krsjz0l3euq52cv4tpux4k',
     amount: req.body.amount,
-    success_url: 'https://google.com',
-    cancel_url: 'https://google.com',
-    ipn_url: 'https://google.com',
+    success_url: 'http://44.200.51.117:3000/',
+    cancel_url: 'http://44.200.51.117:3000/',
+    ipn_url: 'http://44.200.51.117:3000/ipn',
     return_json: true
   };
   console.log(params);
@@ -162,6 +162,13 @@ app.post('/deposit', async (req, res) => {
   }
 })       
 
+invoiceDB.find({ paymentId: '6X4W9'}, (err, docs) => {
+  if (err) {
+    console.log("Error fetching data from the database: ", err);
+  } else {
+    console.log(docs)
+  }
+});
 
 async function postIpn(req, res) {
   const ipAddress = req.connection.remoteAddress;
@@ -217,7 +224,7 @@ async function postIpn(req, res) {
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
     // validate that transaction settles new order
-    invoiceDB.find({ invoice: req.body.invoice, custom: req.body.custom }, function (err, docs) {
+    invoiceDB.find({ paymentId: req.body.paymentId }, function (err, docs) {
       if (err) {
         // Error message if the paymentID doesn't match
         console.log("Error fetching data from the database: ", err);
