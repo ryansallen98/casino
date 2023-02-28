@@ -139,9 +139,9 @@ if (token) {
       document.getElementById('casino-loggedin').style.display = 'flex';
       document.getElementById('casino-login').style.display = 'none';
       document.getElementById('casino-signup-hero').style.display = 'none';
-      document.getElementById('balance').innerHTML = data.user.mainBalance + data.user.bonusBalance;
-      document.getElementById('main-balance').innerHTML = data.user.mainBalance;
-      document.getElementById('bonus-balance').innerHTML = data.user.bonusBalance;
+      document.getElementById('balance').innerHTML = (data.user.mainBalance + data.user.bonusBalance) + '.00';
+      document.getElementById('main-balance').innerHTML = data.user.mainBalance + '.00';
+      document.getElementById('bonus-balance').innerHTML = data.user.bonusBalance + '.00';
       document.getElementById('username-ac').innerHTML = data.user.username;
       document.getElementById('first-name-ac').innerHTML = data.user.firstname;
       document.getElementById('last-name-ac').innerHTML = data.user.lastname;
