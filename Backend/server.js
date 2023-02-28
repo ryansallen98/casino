@@ -129,7 +129,7 @@ app.post('/deposit', async (req, res) => {
     merchant_name: 'iCore Pay',
     invoice: invoiceId,
     order_key: code,
-    merchant_addr: 'etoken:qp468rr6gggl36hvz297krsjz0l3euq52cv4tpux4k',
+    merchant_addr: 'etoken:qp483wunuvy7nnnv5fr2ev8d60q9ras0yvz9ct0gzz',
     amount: req.body.amount,
     success_url: 'http://44.200.51.117:3000/',
     cancel_url: 'http://44.200.51.117:3000/',
