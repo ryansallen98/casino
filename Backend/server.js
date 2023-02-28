@@ -163,17 +163,9 @@ app.post('/deposit', async (req, res) => {
   }
 })       
 
-invoiceDB.find({ paymentId: '6X4W9'}, (err, docs) => {
-  if (err) {
-    console.log("Error fetching data from the database: ", err);
-  } else {
-    console.log(docs)
-  }
-});
-
 async function postIpn(req, res) {
   const ipAddress = req.connection.remoteAddress;
-  console.log(ipAddress);
+  console.log("IP Address: ", ipAddress);
   const allowIps = [
     '::ffff:208.113.133.143',
     '::ffff:45.79.36.250',
@@ -189,7 +181,7 @@ async function postIpn(req, res) {
     console.log('error wrong IP Address')
   } else {
     const ipn = req.body;
-    console.log(ipn)
+    console.log('IPN: ', ipn)
     const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
     const result = await axios.get(url);
     const txData = result.data;
@@ -231,7 +223,7 @@ async function postIpn(req, res) {
         console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn)
-        console.log(docs)
+        console.log('Invoice Find: ', docs)
       }
     });
 
