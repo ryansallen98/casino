@@ -217,7 +217,7 @@ async function postIpn(req, res) {
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
     // validate that transaction settles new order
-    console.log(ipn.paymentId)
+    console.log(ipn)
     invoiceDB.find({ paymentId: ipn.paymentId }, function (err, docs) {
       if (err) {
         // Error message if the paymentID doesn't match
