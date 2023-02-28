@@ -232,6 +232,7 @@ async function postIpn(req, res) {
       } else {
         paidDB.insert(ipn)
         console.log(docs.username)
+        usersDB.find({ user: docs.username }, function (err, docs) { console.log(docs) })
         usersDB.update({ user: docs.username }, { $inc: { bonusBalance: 2 } }, {}, (err, numReplaced) => {
           if (err) {
             // Handle error
