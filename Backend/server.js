@@ -13,7 +13,7 @@ const invoiceDB = new Datastore({ filename: './database/invoice.db', autoload: t
 const paidDB = new Datastore({ filename: './database/paid.db', autoload: true });
 
 // Serve static files from the frontend folder
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend/index.html')));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
