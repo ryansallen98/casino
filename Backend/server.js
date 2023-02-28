@@ -217,7 +217,6 @@ async function postIpn(req, res) {
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
     // validate that transaction settles new order
-    console.log(ipn.payment_id)
     invoiceDB.find({ paymentId: ipn.payment_id }, function (err, docs) {
       if (err) {
         // Error message if the paymentID doesn't match
@@ -225,6 +224,13 @@ async function postIpn(req, res) {
       } else {
         paidDB.insert(ipn)
         console.log('Invoice Find: ', docs)
+        usersDB.update({ username: docs.user }, { $inc: { bonusBalance: 2 } }, {}, (err, numReplaced) => {
+          if (err) {
+            // Handle error
+          } else {
+            console.log(`Updated ${numReplaced} document(s)`);
+          }
+        });
       }
     });
 
