@@ -232,3 +232,7 @@ async function postIpn(req, res) {
 }
 
 app.post("/ipn", postIpn);
+
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
