@@ -161,7 +161,7 @@ app.post('/deposit', async (req, res) => {
   } catch (error) {
     console.log(error.code);
   }
-})       
+})
 
 async function postIpn(req, res) {
   const ipAddress = req.connection.remoteAddress;
@@ -223,14 +223,12 @@ async function postIpn(req, res) {
         console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn)
-        console.log('Invoice Find: ', docs)
-        console.log(docs[0].user)
-        usersDB.find({ username: docs[0].user }, (err, docs) => {
+        usersDB.update({ username: docs[0].user }, { $inc: { mainBalance: 1, bonusBalance: 2 } }, {}, function (err, numReplaced) {
           if (err) {
             // Handle error
             console.log(err);
           } else {
-            console.log(docs);
+            console.log(`${numReplaced} document(s) updated`);
           }
         });
       }
