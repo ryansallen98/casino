@@ -13,7 +13,7 @@ const invoiceDB = new Datastore({ filename: './database/invoice.db', autoload: t
 const paidDB = new Datastore({ filename: './database/paid.db', autoload: true });
 
 // Serve static files from the frontend folder
-app.use(express.static(path.join(__dirname, '../frontend/index.html')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -233,3 +233,6 @@ async function postIpn(req, res) {
 
 app.post("/ipn", postIpn);
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
