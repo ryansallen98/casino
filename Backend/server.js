@@ -38,7 +38,7 @@ app.post('/login', (req, res) => {
       // Return an error message if the username or password is incorrect
       res.status(401).json({ error: 'Invalid username or password' });
     } else {
-      // Generate a JWT token xxwith a payload that includes the user's ID and username
+      // Generate a JWT token with a payload that includes the user's ID and username
       const token = jwt.sign({ userId: user._id, username }, 'secret-key');
 
       // Return the token as part of the response
