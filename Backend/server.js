@@ -98,7 +98,7 @@ app.post('/deposit', async (req, res) => {
     order_key: code,
     merchant_addr: 'etoken:qp483wunuvy7nnnv5fr2ev8d60q9ras0yvz9ct0gzz',
     amount: req.body.amount,
-    success_url: 'http://44.200.51.117:3000/?success=' + amount,
+    success_url: 'http://44.200.51.117:3000/?success=' + req.body.amount,
     cancel_url: 'http://44.200.51.117:3000/?error=error',
     ipn_url: 'http://44.200.51.117:3000/ipn',
     return_json: true,
