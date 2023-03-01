@@ -129,25 +129,28 @@ app.post('/deposit', async (req, res) => {
   }
 });
 
-// API endpoint to handle IPN requests
 async function postIpn(req, res) {
-  const ipAddress = req.connection.remoteAddress;
-  const allowIps = [
-    '::ffff:208.113.133.143',
-    '::ffff:45.79.36.250',
-    '::ffff:127.0.0.1',
-  ];
-  let isTrue = 0;
+  try {
+    const ipAddress = req.connection.remoteAddress;
+    const allowIps = [
+      '::ffff:208.113.133.143',
+      '::ffff:45.79.36.250',
+      '::ffff:127.0.0.1',
+    ];
+    let isTrue = 0;
 
-  allowIps.forEach((ip) => {
-    if (ip === ipAddress) {
-      isTrue++;
+    allowIps.forEach((ip) => {
+      if (ip === ipAddress) {
+        isTrue++;
+      }
+    });
+
+    if (isTrue === 0) {
+      console.log('error wrong IP Address');
+      res.status(400).send('Wrong IP Address');
+      return;
     }
-  });
 
-  if (isTrue === 0) {
-    console.log('error wrong IP Address');
-  } else {
     const ipn = req.body;
     const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
     const result = await axios.get(url);
@@ -172,7 +175,6 @@ async function postIpn(req, res) {
       }
     }
 
-    // function returns address with desired prefix
     function convertAddress(address, targetPrefix) {
       const { prefix, type, hash } = ecashaddr.decode(address);
       if (prefix === targetPrefix) {
@@ -186,11 +188,15 @@ async function postIpn(req, res) {
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
 
-    // validate that transaction settles new order
     invoiceDB.find({ paymentId: ipn.payment_id }, (err, docs) => {
       if (err) {
-        // Error message if the paymentID doesn't match
         console.log('Error fetching data from the database: ', err);
+        res.status(500).send('Error fetching data from the database');
+        return;
+      } else if (!docs || docs.length === 0) {
+        console.log('Payment ID not found');
+        res.status(404).send('Payment ID not found');
+        return;
       } else {
         paidDB.insert(ipn);
         usersDB.update(
@@ -204,20 +210,23 @@ async function postIpn(req, res) {
           {},
           (err, numReplaced) => {
             if (err) {
-              // Handle error
               console.log(err);
+              res.status(500).send('Error updating user balance');
+              return;
             } else {
               console.log(`${numReplaced} document(s) updated`);
+              res.send('OK');
             }
           }
         );
       }
     });
-
-    // Send a response
-    res.send('OK');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 }
+
 
 // API endpoint to handle IPN requests
 app.post('/ipn', postIpn);
