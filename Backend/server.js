@@ -3,127 +3,94 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const Datastore = require('nedb');
-const axios = require('axios')
-const uri = 'https://bux.digital/v1/pay/?';
+const axios = require('axios');
 const ecashaddr = require('ecashaddrjs');
+const WebSocket = require('ws');
+
+const uri = 'https://bux.digital/v1/pay/?';
+
 const app = express();
-
-
-const usersDB = new Datastore({ filename: './database/users.db', autoload: true });
-const invoiceDB = new Datastore({ filename: './database/invoice.db', autoload: true });
-const paidDB = new Datastore({ filename: './database/paid.db', autoload: true });
+const port = process.env.PORT || 3000;
 
 // Serve static files from the frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
-app.use(bodyParser.urlencoded({ extended: true }));
+// Middleware to parse JSON request body
 app.use(bodyParser.json());
 
-// Start the server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+// Connect to databases
+const usersDB = new Datastore({ filename: './database/users.db', autoload: true });
+const invoiceDB = new Datastore({ filename: './database/invoice.db', autoload: true });
+const paidDB = new Datastore({ filename: './database/paid.db', autoload: true });
 
+// API endpoint to handle user login
 app.post('/login', (req, res) => {
-  console.log(true)
-  // Get the email and password from the request body
   const { username, password } = req.body;
 
-  // Find the user in the database
   usersDB.findOne({ username, password }, (err, user) => {
     if (err) {
-      // Return an error message if there's an error with the database
       res.status(500).json({ error: 'Server error' });
     } else if (!user) {
-      // Return an error message if the username or password is incorrect
       res.status(401).json({ error: 'Invalid username or password' });
     } else {
-      // Generate a JWT token with a payload that includes the user's ID and username
       const token = jwt.sign({ userId: user._id, username }, 'secret-key');
-
-      // Return the token as part of the response
       res.json({ token });
     }
   });
 });
 
-// Route that handles sign-up requests
+// API endpoint to handle user sign-up
 app.post('/signup', (req, res) => {
-  // Get the username and password from the request body
   const user = req.body;
   user.mainBalance = 0;
   user.bonusBalance = 0;
-  console.log(user)
-  const username = user.username;
 
-  // Check if the username and password are valid
-  // You can use a database to verify the user's credentials and prevent duplicate usernames
   if (user.username && user.password) {
-    // Check if the username already exists in the database
-    usersDB.findOne({ username }, (err, data) => {
+    usersDB.findOne({ username: user.username }, (err, data) => {
       if (err) {
-        // Return an error message if there's an error with the database
         res.status(500).json({ error: 'Server error' });
       } else if (data) {
-        // Return an error message if the username already exists
         res.status(400).json({ error: 'Username already exists' });
       } else {
         usersDB.insert(user, (err, user) => {
           if (err) {
-            // Return an error message if there's an error with the database
             res.status(500).json({ error: 'Server error' });
           } else {
-            // Generate a JWT token with a payload that includes the user's ID and username
-            const token = jwt.sign({ userId: user._id, username }, 'secret-key');
-
-            // Return the token as part of the response
+            const token = jwt.sign({ userId: user._id, username: user.username }, 'secret-key');
             res.json({ token });
           }
         });
       }
     });
   } else {
-    // Return an error message if the sign-up fails
     res.status(400).json({ error: 'Invalid username or password' });
   }
 });
 
-// Protected route that requires authentication
+// API endpoint to handle protected routes
 app.get('/api/protected', (req, res) => {
-  // Get the token from the request headers
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
 
-  // Verify the token
   jwt.verify(token, 'secret-key', (err, decoded) => {
     if (err) {
-      // Return an error message if the token is invalid
       res.status(401).json({ error: 'Invalid token' });
     } else {
-      // Return some protected data if the token is valid
-      console.log(decoded.userId)
       usersDB.findOne({ _id: decoded.userId }, (err, user) => {
         if (err) {
-          // Return an error message if there's an error with the database
           res.status(500).json({ error: 'Server error' });
         } else if (!user) {
-          // Return an error message if the user is not found
           res.status(404).json({ error: 'User not found' });
         } else {
-          // Return the user's information as part of the response
-          console.log(user)
           res.json({ user });
         }
-      })
+      });
     }
   });
 });
 
+// API endpoint to handle deposit requests
 app.post('/deposit', async (req, res) => {
-  console.log(req.body)
-
-
   const code = Math.random().toString(36).substring(7);
   const invoiceId = Math.random().toString(36).substring(7);
   const params = {
@@ -135,69 +102,71 @@ app.post('/deposit', async (req, res) => {
     success_url: 'http://44.200.51.117:3000/',
     cancel_url: 'http://44.200.51.117:3000/',
     ipn_url: 'http://44.200.51.117:3000/ipn',
-    return_json: true
+    return_json: true,
   };
-  console.log(params);
 
   // create the invoice URI by appending the params to the base URI
   // encode the key-value pairs of the params object as query parameters
-  const queryParams = Object.keys(params).map((key) => {
-    if (Array.isArray(params[key])) {
-      return `${key}=${encodeURIComponent(JSON.stringify(params[key]))}`;
-    }
-    return `${key}=${encodeURIComponent(params[key])}`;
-  }).join('&');
+  const queryParams = Object.keys(params)
+    .map((key) => {
+      if (Array.isArray(params[key])) {
+        return `${key}=${encodeURIComponent(JSON.stringify(params[key]))}`;
+      }
+      return `${key}=${encodeURIComponent(params[key])}`;
+    })
+    .join('&');
   // append the query parameters to the URI
   const getUrl = `${uri}${queryParams}`;
-  console.log('url', getUrl);
 
   try {
     const response = await axios.get(getUrl, { mode: 'no-cors' });
-    console.log(response.data);
-    response.data.user = req.body.user
-    invoiceDB.insert(response.data)
+    response.data.user = req.body.user;
+    invoiceDB.insert(response.data);
     let payURL = response.data.paymentUrl;
     res.json({ payURL });
   } catch (error) {
     console.log(error.code);
   }
-})
+});
 
+// API endpoint to handle IPN requests
 async function postIpn(req, res) {
   const ipAddress = req.connection.remoteAddress;
-  console.log("IP Address: ", ipAddress);
   const allowIps = [
     '::ffff:208.113.133.143',
     '::ffff:45.79.36.250',
-    '::ffff:127.0.0.1'
-  ]
-  let isTrue = 0
-  allowIps.map(ip => {
+    '::ffff:127.0.0.1',
+  ];
+  let isTrue = 0;
+
+  allowIps.forEach((ip) => {
     if (ip === ipAddress) {
-      isTrue++
+      isTrue++;
     }
-  })
+  });
+
   if (isTrue === 0) {
-    console.log('error wrong IP Address')
+    console.log('error wrong IP Address');
   } else {
     const ipn = req.body;
-    console.log('IPN: ', ipn)
     const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
     const result = await axios.get(url);
     const txData = result.data;
     const outputs = txData.outputs;
-    const buxTokenId = "7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5";
+    const buxTokenId =
+      '7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5';
     const buxDecimals = 4;
     const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
     let recipientArray = [];
+
     if (isBuxTransaction) {
       for (let i = 1; i < outputs.length; i++) {
         const isSlpOutput = outputs[i].slp;
         if (isSlpOutput) {
           const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
           recipientArray.push({
-            address: convertAddress(outputs[i].address, "etoken"),
-            buxAmount: buxAmount
+            address: convertAddress(outputs[i].address, 'etoken'),
+            buxAmount: buxAmount,
           });
         }
       }
@@ -212,31 +181,84 @@ async function postIpn(req, res) {
         const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
         return convertedAddress;
       }
-    };
+    }
 
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
+
     // validate that transaction settles new order
     invoiceDB.find({ paymentId: ipn.payment_id }, (err, docs) => {
       if (err) {
         // Error message if the paymentID doesn't match
-        console.log("Error fetching data from the database: ", err);
+        console.log('Error fetching data from the database: ', err);
       } else {
-        paidDB.insert(ipn)
-        usersDB.update({ username: docs[0].user }, { $inc: { mainBalance: parseFloat(ipn.amount1[0]), bonusBalance: 1 } }, {}, function (err, numReplaced) {
-          if (err) {
-            // Handle error
-            console.log(err);
-          } else {
-            console.log(`${numReplaced} document(s) updated`);
+        paidDB.insert(ipn);
+        usersDB.update(
+          { username: docs[0].user },
+          {
+            $inc: {
+              mainBalance: parseFloat(ipn.amount1[0]),
+              bonusBalance: 1,
+            },
+          },
+          {},
+          (err, numReplaced) => {
+            if (err) {
+              // Handle error
+              console.log(err);
+            } else {
+              console.log(`${numReplaced} document(s) updated`);
+
+              // Map to store WebSocket connections and their associated JWT tokens
+              const clients = new Map();
+
+              wss.on('connection', (socket) => {
+                console.log('WebSocket connection established');
+
+                socket.on('message', (data) => {
+                  console.log(`Received data from client: ${data}`);
+
+                  // Parse the incoming message data
+                  const { token, message } = JSON.parse(data);
+
+                  // Verify the JWT token
+                  jwt.verify(token, 'secret-key', (err, decoded) => {
+                    if (err) {
+                      console.log('Invalid JWT token');
+                    } else {
+                      const { userId } = decoded;
+                      console.log(`Valid JWT token for user ID: ${userId}`);
+
+                      // Store the WebSocket connection and associated JWT token
+                      clients.set(socket, token);
+
+                      // Send the message to all clients with the same JWT token
+                      for (const [client, clientToken] of clients.entries()) {
+                        if (clientToken === token) {
+                          client.send(`User ID ${userId}`);
+                        }
+                      }
+                    }
+                  });
+                });
+              });
+            }
           }
-        });
+        );
       }
     });
 
     // Send a response
-    res.send("OK");
+    res.send('OK');
   }
 }
 
-app.post("/ipn", postIpn);
+// API endpoint to handle IPN requests
+app.post('/ipn', postIpn);
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+const wss = new WebSocket.Server({ port: 8080 });
