@@ -187,7 +187,7 @@ async function postIpn(req, res) {
 
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
-    console.log(ipn.payment_id)
+    console.log(ipn)
 
     invoiceDB.find({ paymentId: ipn.payment_id }, (err, docs) => {
       if (err) {
