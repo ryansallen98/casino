@@ -187,15 +187,14 @@ async function postIpn(req, res) {
 
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
+    console.log(ipn.payment_id)
 
     invoiceDB.find({ paymentId: ipn.payment_id }, (err, docs) => {
       if (err) {
         console.log('Error fetching data from the database: ', err);
-        res.status(500).send('Error fetching data from the database');
         return;
       } else if (!docs || docs.length === 0) {
         console.log('Payment ID not found');
-        res.status(404).send('Payment ID not found');
         return;
       } else {
         paidDB.insert(ipn);
