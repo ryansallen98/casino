@@ -122,7 +122,7 @@ app.post('/deposit', async (req, res) => {
     response.data.user = req.body.user;
     invoiceDB.insert(response.data);
     let payURL = response.data.paymentUrl;
-    console.log(payURL)
+    console.log(response.data)
     res.json({ payURL });
   } catch (error) {
     console.log(error.code);
