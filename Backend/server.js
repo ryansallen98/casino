@@ -152,38 +152,38 @@ async function postIpn(req, res) {
     }
 
     const ipn = req.body;
-    const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
-    const result = await axios.get(url);
-    const txData = result.data;
-    const outputs = txData.outputs;
-    const buxTokenId =
-      '7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5';
-    const buxDecimals = 4;
-    const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
+    // const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
+    // const result = await axios.get(url);
+    // const txData = result.data;
+    // const outputs = txData.outputs;
+    // const buxTokenId =
+    //   '7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5';
+    // const buxDecimals = 4;
+    // const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
     let recipientArray = [];
 
-    if (isBuxTransaction) {
-      for (let i = 1; i < outputs.length; i++) {
-        const isSlpOutput = outputs[i].slp;
-        if (isSlpOutput) {
-          const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
-          recipientArray.push({
-            address: convertAddress(outputs[i].address, 'etoken'),
-            buxAmount: buxAmount,
-          });
-        }
-      }
-    }
+    // if (isBuxTransaction) {
+    //   for (let i = 1; i < outputs.length; i++) {
+    //     const isSlpOutput = outputs[i].slp;
+    //     if (isSlpOutput) {
+    //       const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
+    //       recipientArray.push({
+    //         address: convertAddress(outputs[i].address, 'etoken'),
+    //         buxAmount: buxAmount,
+    //       });
+    //     }
+    //   }
+    // }
 
-    function convertAddress(address, targetPrefix) {
-      const { prefix, type, hash } = ecashaddr.decode(address);
-      if (prefix === targetPrefix) {
-        return address;
-      } else {
-        const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
-        return convertedAddress;
-      }
-    }
+    // function convertAddress(address, targetPrefix) {
+    //   const { prefix, type, hash } = ecashaddr.decode(address);
+    //   if (prefix === targetPrefix) {
+    //     return address;
+    //   } else {
+    //     const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
+    //     return convertedAddress;
+    //   }
+    // }
 
     ipn.recipientArray = recipientArray;
     ipn.ipAddress = ipAddress;
