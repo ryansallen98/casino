@@ -151,20 +151,6 @@ if (token) {
       document.getElementById('county-ac').innerHTML = data.user.county;
       document.getElementById('state-ac').innerHTML = data.user.state;
       user = data.user.username;
-
-      // Connect to the WebSocket server
-      const socket = new WebSocket('ws://localhost:8080');
-
-      // When the WebSocket connection is established, send the user ID and JWT token to the server
-      socket.addEventListener('open', (event) => {
-        socket.send(JSON.stringify({ token }));
-      });
-
-      // When a message is received from the server, log it to the console
-      socket.addEventListener('message', (event) => {
-        console.log(`Received message from server: ${event.data}`);
-      });
-
     })
     .catch(error => {
       // Handle any errors that occur during the request
@@ -187,4 +173,14 @@ logoutButton.addEventListener('click', function () {
   window.location.href = '/';
 });
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const successParam = urlParams.get('success');
+
+if (successParam) {
+  const messageDiv = document.getElementById('message');
+  const messgaeText = document.getElementById('message-text');
+  messageDiv.style.display = 'flex';
+  messgaeText.innerHTML = `🎉 Congratulations! You have successfully deposited <strong>$${successParam}</strong> in your account.`;
+}
 

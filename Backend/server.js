@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const Datastore = require('nedb');
 const axios = require('axios');
 const ecashaddr = require('ecashaddrjs');
-const WebSocket = require('ws');
 
 const uri = 'https://bux.digital/v1/pay/?';
 
@@ -99,8 +98,8 @@ app.post('/deposit', async (req, res) => {
     order_key: code,
     merchant_addr: 'etoken:qp483wunuvy7nnnv5fr2ev8d60q9ras0yvz9ct0gzz',
     amount: req.body.amount,
-    success_url: 'http://44.200.51.117:3000/',
-    cancel_url: 'http://44.200.51.117:3000/',
+    success_url: 'http://44.200.51.117:3000/?success=' + amount,
+    cancel_url: 'http://44.200.51.117:3000/?error=error',
     ipn_url: 'http://44.200.51.117:3000/ipn',
     return_json: true,
   };
@@ -208,40 +207,6 @@ async function postIpn(req, res) {
               console.log(err);
             } else {
               console.log(`${numReplaced} document(s) updated`);
-
-              // Map to store WebSocket connections and their associated JWT tokens
-              const clients = new Map();
-
-              wss.on('connection', (socket) => {
-                console.log('WebSocket connection established');
-
-                socket.on('message', (data) => {
-                  console.log(`Received data from client: ${data}`);
-
-                  // Parse the incoming message data
-                  const { token, message } = JSON.parse(data);
-
-                  // Verify the JWT token
-                  jwt.verify(token, 'secret-key', (err, decoded) => {
-                    if (err) {
-                      console.log('Invalid JWT token');
-                    } else {
-                      const { userId } = decoded;
-                      console.log(`Valid JWT token for user ID: ${userId}`);
-
-                      // Store the WebSocket connection and associated JWT token
-                      clients.set(socket, token);
-
-                      // Send the message to all clients with the same JWT token
-                      for (const [client, clientToken] of clients.entries()) {
-                        if (clientToken === token) {
-                          client.send(`User ID ${userId}`);
-                        }
-                      }
-                    }
-                  });
-                });
-              });
             }
           }
         );
@@ -260,5 +225,3 @@ app.post('/ipn', postIpn);
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
-
-const wss = new WebSocket.Server({ port: 8080 });
