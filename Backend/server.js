@@ -129,73 +129,161 @@ app.post('/deposit', async (req, res) => {
   }
 });
 
+// async function postIpn(req, res) {
+//   console.log(req.body)
+//   try {
+//     const ipAddress = req.connection.remoteAddress;
+//     const allowIps = [
+//       '::ffff:208.113.133.143',
+//       '::ffff:45.79.36.250',
+//       '::ffff:127.0.0.1',
+//     ];
+//     let isTrue = 0;
+
+//     allowIps.forEach((ip) => {
+//       if (ip === ipAddress) {
+//         isTrue++;
+//       }
+//     });
+
+//     if (isTrue === 0) {
+//       console.log('error wrong IP Address');
+//       res.status(400).send('Wrong IP Address');
+//       return;
+//     }
+
+//     const ipn = req.body;
+//     // const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
+//     // const result = await axios.get(url);
+//     // const txData = result.data;
+//     // const outputs = txData.outputs;
+//     // const buxTokenId =
+//     //   '7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5';
+//     // const buxDecimals = 4;
+//     // const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
+//     let recipientArray = [];
+
+//     // if (isBuxTransaction) {
+//     //   for (let i = 1; i < outputs.length; i++) {
+//     //     const isSlpOutput = outputs[i].slp;
+//     //     if (isSlpOutput) {
+//     //       const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
+//     //       recipientArray.push({
+//     //         address: convertAddress(outputs[i].address, 'etoken'),
+//     //         buxAmount: buxAmount,
+//     //       });
+//     //     }
+//     //   }
+//     // }
+
+//     // function convertAddress(address, targetPrefix) {
+//     //   const { prefix, type, hash } = ecashaddr.decode(address);
+//     //   if (prefix === targetPrefix) {
+//     //     return address;
+//     //   } else {
+//     //     const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
+//     //     return convertedAddress;
+//     //   }
+//     // }
+
+//     // ipn.recipientArray = recipientArray;
+//     // ipn.ipAddress = ipAddress;
+
+//     invoiceDB.find({ paymentId: ipn.payment_id }, (err, docs) => {
+//       if (err) {
+//         console.log('Error fetching data from the database: ', err);
+//         return;
+//       } else if (!docs || docs.length === 0) {
+//         console.log('Payment ID not found');
+//         return;
+//       } else {
+//         paidDB.insert(ipn);
+//         usersDB.update(
+//           { username: docs[0].user },
+//           {
+//             $inc: {
+//               mainBalance: parseFloat(ipn.amount1[0]),
+//               bonusBalance: 1,
+//             },
+//           },
+//           {},
+//           (err, numReplaced) => {
+//             if (err) {
+//               console.log(err);
+//               res.status(500).send('Error updating user balance');
+//               return;
+//             } else {
+//               console.log(`${numReplaced} document(s) updated`);
+//               res.send('OK');
+//             }
+//           }
+//         );
+//       }
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// }
+
 async function postIpn(req, res) {
-  try {
-    const ipAddress = req.connection.remoteAddress;
-    const allowIps = [
-      '::ffff:208.113.133.143',
-      '::ffff:45.79.36.250',
-      '::ffff:127.0.0.1',
-    ];
-    let isTrue = 0;
-
-    allowIps.forEach((ip) => {
-      if (ip === ipAddress) {
-        isTrue++;
+  const ipAddress = req.connection.remoteAddress;
+  console.log(ipAddress);
+  const allowIps = [
+    '::ffff:208.113.133.143',
+    '::ffff:45.79.36.250',
+    '::ffff:127.0.0.1'
+  ]
+  let isTrue = 0
+  allowIps.map(ip => {
+    if (ip === ipAddress) {
+      isTrue++
+    }
+  })
+  if (isTrue === 0) {
+    console.log('error wrong IP Address')
+  } else {
+    const ipn = req.body;
+    console.log(ipn)
+    const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
+    const result = await axios.get(url);
+    const txData = result.data;
+    const outputs = txData.outputs;
+    const buxTokenId = "7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5";
+    const buxDecimals = 4;
+    const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
+    let recipientArray = [];
+    if (isBuxTransaction) {
+      for (let i = 1; i < outputs.length; i++) {
+        const isSlpOutput = outputs[i].slp;
+        if (isSlpOutput) {
+          const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
+          recipientArray.push({
+            address: convertAddress(outputs[i].address, "etoken"),
+            buxAmount: buxAmount
+          });
+        }
       }
-    });
-
-    if (isTrue === 0) {
-      console.log('error wrong IP Address');
-      res.status(400).send('Wrong IP Address');
-      return;
     }
 
-    const ipn = req.body;
-    // const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
-    // const result = await axios.get(url);
-    // const txData = result.data;
-    // const outputs = txData.outputs;
-    // const buxTokenId =
-    //   '7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5';
-    // const buxDecimals = 4;
-    // const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
-    let recipientArray = [];
+    // function returns address with desired prefix
+    function convertAddress(address, targetPrefix) {
+      const { prefix, type, hash } = ecashaddr.decode(address);
+      if (prefix === targetPrefix) {
+        return address;
+      } else {
+        const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
+        return convertedAddress;
+      }
+    };
 
-    // if (isBuxTransaction) {
-    //   for (let i = 1; i < outputs.length; i++) {
-    //     const isSlpOutput = outputs[i].slp;
-    //     if (isSlpOutput) {
-    //       const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
-    //       recipientArray.push({
-    //         address: convertAddress(outputs[i].address, 'etoken'),
-    //         buxAmount: buxAmount,
-    //       });
-    //     }
-    //   }
-    // }
-
-    // function convertAddress(address, targetPrefix) {
-    //   const { prefix, type, hash } = ecashaddr.decode(address);
-    //   if (prefix === targetPrefix) {
-    //     return address;
-    //   } else {
-    //     const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
-    //     return convertedAddress;
-    //   }
-    // }
-
-    // ipn.recipientArray = recipientArray;
-    // ipn.ipAddress = ipAddress;
-    console.log(req.body)
-
-    invoiceDB.find({ paymentId: ipn.payment_id }, (err, docs) => {
+    ipn.recipientArray = recipientArray;
+    ipn.ipAddress = ipAddress;
+    // validate that transaction settles new order
+    invoiceDB.find({ paymentId: ipn.payment_id }, function (err, docs) {
       if (err) {
-        console.log('Error fetching data from the database: ', err);
-        return;
-      } else if (!docs || docs.length === 0) {
-        console.log('Payment ID not found');
-        return;
+        // Error message if the paymentID doesn't match
+        console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn);
         usersDB.update(
@@ -220,12 +308,11 @@ async function postIpn(req, res) {
         );
       }
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+
+    // Send a response
+    res.send("OK");
   }
 }
-
 
 // API endpoint to handle IPN requests
 app.post('/ipn', postIpn);
