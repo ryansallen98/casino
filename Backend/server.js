@@ -9,7 +9,7 @@ const ecashaddr = require('ecashaddrjs');
 const uri = 'https://bux.digital/v1/pay/?';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Serve static files from the frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
@@ -90,15 +90,16 @@ app.get('/api/protected', (req, res) => {
 
 // API endpoint to handle deposit requests
 app.post('/deposit', async (req, res) => {
+  console.log(req.body.data);
   const code = Math.random().toString(36).substring(7);
   const invoiceId = Math.random().toString(36).substring(7);
   const params = {
     merchant_name: 'iCore Pay',
     invoice: invoiceId,
     order_key: code,
-    merchant_addr: 'etoken:qp483wunuvy7nnnv5fr2ev8d60q9ras0yvz9ct0gzz',
-    amount: req.body.amount,
-    success_url: 'http://44.200.51.117:3000/?success=' + req.body.amount,
+    merchant_addr: req.body.data.token,
+    amount: req.body.data.amount,
+    success_url: 'http://44.200.51.117:3000/?success=' + req.body.data.amount,
     cancel_url: 'http://44.200.51.117:3000/?error=error',
     ipn_url: 'http://44.200.51.117:3000/ipn',
     return_json: true,
@@ -117,12 +118,32 @@ app.post('/deposit', async (req, res) => {
   // append the query parameters to the URI
   const getUrl = `${uri}${queryParams}`;
 
+  usersDB.update(
+    { username: req.body.data.user },
+    {
+      $inc: {
+        mainBalance: parseFloat(req.body.data.amount),
+        bonusBalance: 1,
+      },
+    },
+    {},
+    (err, numReplaced) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log(`${numReplaced} document(s) updated`);
+      }
+    }
+  );
+
   try {
     const response = await axios.get(getUrl, { mode: 'no-cors' });
-    response.data.user = req.body.user;
+    response.data.user = req.body.data.user;
     invoiceDB.insert(response.data);
     let payURL = response.data.paymentUrl;
     console.log(response.data)
+    
     res.json({ payURL });
   } catch (error) {
     console.log(error.code);

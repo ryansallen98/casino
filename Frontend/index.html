@@ -1,4 +1,4 @@
-<!DOCTYPE html><!--  Last Published: Mon Mar 06 2023 12:51:04 GMT+0000 (Coordinated Universal Time)  -->
+<!DOCTYPE html><!--  Last Published: Mon Mar 06 2023 13:40:39 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="63e0f64c65829313ff1b0340" data-wf-site="63e0f5fdcff1a1df6d888027">
 <head>
   <meta charset="utf-8">
@@ -523,7 +523,6 @@
                     <h2 class="heading-h5-size mg-bottom-12px">My Profile</h2>
                     <div><strong class="min-width-100">First Name:</strong> <span id="first-name-ac" class="account-subject">Ryan</span></div>
                     <div><strong class="min-width-100">Last Name:</strong> <span id="last-name-ac" class="account-subject">Allen</span></div>
-                    <div><strong class="min-width-100">Email:</strong> <span id="email-ac" class="account-subject">ryanallen50@outlook.com</span></div>
                     <div><strong class="min-width-100">eToken:</strong> <span id="token-ac" class="account-subject">eToken</span></div>
                   </div>
                 </div>
@@ -554,8 +553,46 @@ submitButton.style.display = 'none';
 const nextButton = document.getElementById('signup-next');
 const backButton = document.getElementById('signup-back');
 let signUpSlide = 1;
-console.log(depositForm)
 let user;
+// Get the token from a cookie or local storage
+const tokenCookie = document.cookie.split('; ').find(row => row.startsWith('token='));
+const token = tokenCookie ? tokenCookie.split('=')[1] : undefined;
+if (token) {
+  // Include the token in the request headers
+  const headers = { Authorization: `Bearer ${token}` };
+  // Make a request to a protected API endpoint
+  fetch('/api/protected', { headers })
+    .then(response => {
+      if (response.ok) {
+        // The token is valid, so display some protected data
+        return response.json();
+      } else {
+        // The token is invalid, so redirect to the login page
+        window.location.href = '/error';
+      }
+    })
+    .then(data => {
+      // Display the protected data to the user
+      console.log(data);
+      document.getElementById('casino-loggedin').style.display = 'flex';
+      document.getElementById('casino-login').style.display = 'none';
+      document.getElementById('casino-signup-hero').style.display = 'none';
+      document.getElementById('balance').innerHTML = (data.user.mainBalance + data.user.bonusBalance) + '.00';
+      document.getElementById('main-balance').innerHTML = data.user.mainBalance + '.00';
+      document.getElementById('bonus-balance').innerHTML = data.user.bonusBalance + '.00';
+      document.getElementById('username-ac').innerHTML = data.user.username;
+      document.getElementById('first-name-ac').innerHTML = data.user.firstname;
+      document.getElementById('last-name-ac').innerHTML = data.user.lastname;
+      document.getElementById('token-ac').innerHTML = data.user.etoken;
+    })
+    .catch(error => {
+      // Handle any errors that occur during the request
+      console.error(error);
+    });
+} else {
+  // The token is not present, so redirect to the login page
+  //window.location.href = '/login';
+}
 nextButton.addEventListener('click', () => {
   signUpSlide++;
   if (signUpSlide === 2) {
@@ -621,11 +658,15 @@ signupForm.addEventListener('submit', async (event) => {
 depositForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const formData = new FormData(depositForm)
-  const amount = formData.get('amount');
+  const data = {
+  	"amount": formData.get('amount'),
+    "user": document.getElementById('username-ac').innerHTML,
+    "token": document.getElementById('token-ac').innerHTML
+   };
   const response = await fetch('/deposit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user, amount })
+    body: JSON.stringify({ data })
   });
   if (response.ok) {
     const { payURL } = await response.json();
@@ -637,46 +678,6 @@ depositForm.addEventListener('submit', async (event) => {
     errorElement.textContent = error;
   }
 });
-// Get the token from a cookie or local storage
-const tokenCookie = document.cookie.split('; ').find(row => row.startsWith('token='));
-const token = tokenCookie ? tokenCookie.split('=')[1] : undefined;
-if (token) {
-  // Include the token in the request headers
-  const headers = { Authorization: `Bearer ${token}` };
-  // Make a request to a protected API endpoint
-  fetch('/api/protected', { headers })
-    .then(response => {
-      if (response.ok) {
-        // The token is valid, so display some protected data
-        return response.json();
-      } else {
-        // The token is invalid, so redirect to the login page
-        window.location.href = '/error';
-      }
-    })
-    .then(data => {
-      // Display the protected data to the user
-      console.log(data);
-      document.getElementById('casino-loggedin').style.display = 'flex';
-      document.getElementById('casino-login').style.display = 'none';
-      document.getElementById('casino-signup-hero').style.display = 'none';
-      document.getElementById('balance').innerHTML = (data.user.mainBalance + data.user.bonusBalance) + '.00';
-      document.getElementById('main-balance').innerHTML = data.user.mainBalance + '.00';
-      document.getElementById('bonus-balance').innerHTML = data.user.bonusBalance + '.00';
-      document.getElementById('username-ac').innerHTML = data.user.username;
-      document.getElementById('first-name-ac').innerHTML = data.user.firstname;
-      document.getElementById('last-name-ac').innerHTML = data.user.lastname;
-      document.getElementById('token-ac').innerHTML = data.user.token;
-      user = data.user.username;
-    })
-    .catch(error => {
-      // Handle any errors that occur during the request
-      console.error(error);
-    });
-} else {
-  // The token is not present, so redirect to the login page
-  //window.location.href = '/login';
-}
 // Get the logout button element
 const logoutButton = document.getElementById('logout');
 // Add a click event listener to the button
