@@ -227,7 +227,8 @@ app.post('/deposit', async (req, res) => {
 // }
 
 async function postIpn(req, res) {
-  console.log(req.body)
+  console.log(req.body);
+  res.send('Received POST request');
 }
 
 // API endpoint to handle IPN requests
