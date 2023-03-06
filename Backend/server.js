@@ -290,26 +290,6 @@ async function postIpn(req, res) {
         console.log("Error fetching data from the database: ", err);
       } else {
         paidDB.insert(ipn);
-        usersDB.update(
-          { username: docs[0].user },
-          {
-            $inc: {
-              mainBalance: parseFloat(ipn.amount1[0]),
-              bonusBalance: 1,
-            },
-          },
-          {},
-          (err, numReplaced) => {
-            if (err) {
-              console.log(err);
-              res.status(500).send('Error updating user balance');
-              return;
-            } else {
-              console.log(`${numReplaced} document(s) updated`);
-              res.send('OK');
-            }
-          }
-        );
       }
     });
 
