@@ -226,7 +226,7 @@ app.post('/deposit', async (req, res) => {
 //   }
 // }
 
-async function postIpn(req, res) {
+function postIpn(req, res) {
   console.log(req.body);
   res.send('Received POST request');
 }
