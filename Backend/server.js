@@ -227,76 +227,7 @@ app.post('/deposit', async (req, res) => {
 // }
 
 async function postIpn(req, res) {
-  const ipAddress = req.connection.remoteAddress;
-  console.log(ipAddress);
-  const allowIps = [
-    '::ffff:208.113.133.143',
-    '::ffff:45.79.36.250',
-    '::ffff:127.0.0.1'
-  ]
-  let isTrue = 0
-  allowIps.map(ip => {
-    if (ip === ipAddress) {
-      isTrue++
-    }
-  })
-  if (isTrue === 0) {
-    console.log('error wrong IP Address')
-  } else {
-    const ipn = req.body;
-    console.log(ipn)
-    const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
-    let recipientArray = [];
-    try {
-      const result = await axios.get(url);
-      const txData = result.data;
-      const outputs = txData.outputs;
-      const buxTokenId = "7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5";
-      const buxDecimals = 4;
-      const isBuxTransaction = txData.slpToken.tokenId === buxTokenId;
-      if (isBuxTransaction) {
-        for (let i = 1; i < outputs.length; i++) {
-          const isSlpOutput = outputs[i].slp;
-          if (isSlpOutput) {
-            const buxAmount = +(outputs[i].slp.value) / 10 ** buxDecimals;
-            recipientArray.push({
-              address: convertAddress(outputs[i].address, "etoken"),
-              buxAmount: buxAmount
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error.code)
-    }
-
-    // function returns address with desired prefix
-    function convertAddress(address, targetPrefix) {
-      const { prefix, type, hash } = ecashaddr.decode(address);
-      if (prefix === targetPrefix) {
-        return address;
-      } else {
-        const convertedAddress = ecashaddr.encode(targetPrefix, type, hash);
-        return convertedAddress;
-      }
-    };
-
-    ipn.recipientArray = recipientArray;
-    ipn.ipAddress = ipAddress;
-    // validate that transaction settles new order
-    invoiceDB.find({ paymentId: ipn.payment_id }, function (err, docs) {
-      if (err) {
-        // Error message if the paymentID doesn't match
-        console.log("Error fetching data from the database: ", err);
-      } else {
-        paidDB.insert(ipn);
-        console.log(ipn)
-      }
-    });
-
-    // Send a response
-    res.send("OK");
-  }
+  console.log(req.body)
 }
 
 // API endpoint to handle IPN requests
