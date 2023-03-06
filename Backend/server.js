@@ -9,7 +9,7 @@ const ecashaddr = require('ecashaddrjs');
 const uri = 'https://bux.digital/v1/pay/?';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Serve static files from the frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
@@ -150,6 +150,69 @@ app.post('/deposit', async (req, res) => {
   }
 });
 
+
+// API endpoint to handle deposit requests
+app.post('/signup-bonus', async (req, res) => {
+  console.log(req.body.data);
+  const code = Math.random().toString(36).substring(7);
+  const invoiceId = Math.random().toString(36).substring(7);
+  const params = {
+    merchant_name: 'iCore Pay',
+    invoice: invoiceId,
+    order_key: code,
+    merchant_addr: req.body.data.token,
+    amount: 1,
+    success_url: 'http://44.200.51.117:3000/?successbonus',
+    cancel_url: 'http://44.200.51.117:3000/?error=error',
+    ipn_url: 'http://44.200.51.117:3000/ipn',
+    return_json: true,
+  };
+
+  // create the invoice URI by appending the params to the base URI
+  // encode the key-value pairs of the params object as query parameters
+  const queryParams = Object.keys(params)
+    .map((key) => {
+      if (Array.isArray(params[key])) {
+        return `${key}=${encodeURIComponent(JSON.stringify(params[key]))}`;
+      }
+      return `${key}=${encodeURIComponent(params[key])}`;
+    })
+    .join('&');
+  // append the query parameters to the URI
+  const getUrl = `${uri}${queryParams}`;
+
+  usersDB.update(
+    { username: req.body.data.user },
+    {
+      $inc: {
+        mainBalance: parseFloat(req.body.data.amount),
+        bonusBalance: 500,
+      },
+    },
+    {},
+    (err, numReplaced) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log(`${numReplaced} document(s) updated`);
+      }
+    }
+  );
+
+  try {
+    const response = await axios.get(getUrl, { mode: 'no-cors' });
+    response.data.user = req.body.data.user;
+    invoiceDB.insert(response.data);
+    let payURL = response.data.paymentUrl;
+    console.log(response.data)
+    
+    res.json({ payURL });
+  } catch (error) {
+    console.log(error.code);
+  }
+});
+
 // async function postIpn(req, res) {
 //   console.log(req.body)
 //   try {
@@ -247,8 +310,8 @@ app.post('/deposit', async (req, res) => {
 //   }
 // }
 
-function postIpn(req, res) {
-  console.log(req.body);
+async function postIpn(req, res) {
+  console.log(req);
   res.send('Received POST request');
 }
 

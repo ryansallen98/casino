@@ -533,6 +533,7 @@ label {
   padding: 12px 16px;
   font-size: 14px;
   line-height: 1.143em;
+  cursor: pointer;
 }
 
 .btn-secondary.small.sq {
@@ -1846,6 +1847,7 @@ label {
   -webkit-justify-content: center;
   -ms-flex-pack: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .text-block-9._1.box:hover {
@@ -2195,6 +2197,7 @@ label {
   opacity: 0.25;
   -webkit-transition: opacity 200ms ease;
   transition: opacity 200ms ease;
+  cursor: pointer;
 }
 
 .esports-menu-icon.star:hover {
@@ -2351,11 +2354,13 @@ label {
   right: auto;
   bottom: auto;
   z-index: 2;
-  padding: 0.8rem 3rem;
+  padding: 0.4rem 3rem;
   background-color: #ce0000;
-  -webkit-transform: translate(-40px, 5px) rotate(-45deg);
-  -ms-transform: translate(-40px, 5px) rotate(-45deg);
-  transform: translate(-40px, 5px) rotate(-45deg);
+  -webkit-transform: translate(-40px, 10px) rotate(-45deg);
+  -ms-transform: translate(-40px, 10px) rotate(-45deg);
+  transform: translate(-40px, 10px) rotate(-45deg);
+  font-size: 12px;
+  line-height: 12px;
   font-weight: 600;
 }
 
@@ -2549,6 +2554,7 @@ label {
 }
 
 .casino-signup-hero {
+  display: block;
   padding-top: 0px;
 }
 
@@ -2803,10 +2809,7 @@ label {
   right: 0%;
   bottom: 0%;
   z-index: 30;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
+  display: none;
   overflow: auto;
   width: 100%;
   height: 100vh;
@@ -2927,11 +2930,19 @@ label {
 }
 
 .casino-signup-cta {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   overflow: hidden;
   padding-top: 120px;
   padding-bottom: 80px;
   border-radius: 0px;
   background-color: #144ee3;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(11, 16, 27, 0)), to(#181e29)), url('../images/shutterstock_2055502709.jpg');
+  background-image: linear-gradient(180deg, rgba(11, 16, 27, 0), #181e29), url('../images/shutterstock_2055502709.jpg');
+  background-position: 0px 0px, 0px 0px;
+  background-size: auto, auto;
 }
 
 .btn-icon {
@@ -3273,7 +3284,7 @@ label {
 }
 
 .signup-form-block {
-  display: block;
+  display: none;
   max-width: 500px;
   padding: 66px 50px;
   -webkit-box-orient: vertical;
@@ -3358,7 +3369,10 @@ label {
 }
 
 .deposit-form {
-  display: none;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   min-width: 400px;
   padding: 40px 40px 60px;
   -webkit-box-orient: vertical;
@@ -3467,6 +3481,13 @@ label {
   -webkit-flex-direction: column;
   -ms-flex-direction: column;
   flex-direction: column;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  -ms-grid-rows: auto auto;
+  grid-template-rows: auto auto;
   text-align: left;
 }
 
@@ -3640,6 +3661,516 @@ label {
   -ms-grid-rows: auto;
   grid-template-rows: auto;
   background-color: #333a49;
+}
+
+.preloader-text {
+  width: 150px;
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  letter-spacing: 0px;
+  text-transform: uppercase;
+}
+
+.preloader-bar-1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 60%;
+  height: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  border-radius: 1000px;
+  background-color: #144ee3;
+}
+
+.c-preloader {
+  position: fixed;
+  left: 0%;
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
+  z-index: 9999;
+  display: none;
+  overflow: hidden;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c-preloader-bar {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: hidden;
+  width: 15em;
+  height: 0.25em;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  border-radius: 1000px;
+  background-color: #181e29;
+}
+
+.preloader-bar-2 {
+  width: 50%;
+  height: 100%;
+  background-color: #1b6eff;
+}
+
+._w-preloader-content {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c-preloader-curtain {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.c-preloader-content {
+  position: absolute;
+  z-index: 5;
+}
+
+.c-preloader-title {
+  overflow: hidden;
+  margin-bottom: 0.5em;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
+._w-preloader {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-color: rgba(19, 19, 19, 0);
+}
+
+.preloader-curtain {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  background-color: #131313;
+}
+
+.preloader-curtain.right._1 {
+  background-color: #0b101b;
+}
+
+.preloader-curtain.right._2 {
+  position: absolute;
+  left: auto;
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
+  background-color: rgba(19, 19, 19, 0.5);
+}
+
+.preloader-curtain.left._2 {
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  right: auto;
+  bottom: 0%;
+  background-color: rgba(19, 19, 19, 0.5);
+}
+
+.preloader-curtain.left._1 {
+  background-color: #0b101b;
+}
+
+.div-block-5 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.image-4 {
+  width: 125vw;
+  height: 100px;
+  max-width: none;
+  margin-top: -50px;
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.div-block-3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 50%;
+  height: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.div-block-145 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: hidden;
+  padding-top: 60px;
+  padding-bottom: 80px;
+  background-image: linear-gradient(135deg, rgba(20, 78, 227, 0.8), rgba(20, 78, 227, 0)), url('../images/Asset-2.png');
+  background-position: 0px 0px, 50% 100%;
+  background-size: auto, cover;
+}
+
+.text-block-14 {
+  margin-top: 20px;
+  margin-bottom: 40px;
+  color: #fff;
+  font-size: 20px;
+  line-height: 28px;
+  text-align: center;
+}
+
+.heading-2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.heading-4 {
+  color: #fff;
+  font-size: 150px;
+  line-height: 158px;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.div-block-4 {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 50%;
+  height: 100%;
+  -webkit-box-align: end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+  -webkit-align-self: flex-end;
+  -ms-flex-item-align: end;
+  align-self: flex-end;
+}
+
+.button-3 {
+  padding: 12px 60px;
+  border-radius: 100px;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  -webkit-transition: background-color 200ms ease, -webkit-transform 200ms ease;
+  transition: background-color 200ms ease, -webkit-transform 200ms ease;
+  transition: transform 200ms ease, background-color 200ms ease;
+  transition: transform 200ms ease, background-color 200ms ease, -webkit-transform 200ms ease;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.button-3:hover {
+  background-color: #ff146c;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  -webkit-transform: scale(1.1);
+  -ms-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+.div-block-146 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.text-span {
+  margin-top: -35px;
+  padding: 15px 30px;
+  background-image: url('../images/Asset-4.svg');
+  background-position: 50% 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  -webkit-transform: rotate(-3deg);
+  -ms-transform: rotate(-3deg);
+  transform: rotate(-3deg);
+  color: #530321;
+  font-size: 30px;
+  line-height: 34px;
+  text-transform: uppercase;
+}
+
+.image-24 {
+  position: absolute;
+  left: auto;
+  top: auto;
+  right: auto;
+  bottom: -100px;
+  z-index: 9;
+  width: 75%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.container-2 {
+  width: 100%;
+  height: 100%;
+  max-width: 980px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 40px;
+  padding-left: 40px;
+}
+
+.div-block-54 {
+  position: static;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 40px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.div-block-54.val {
+  position: relative;
+  padding-left: 0px;
+}
+
+.div-block-48 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  padding: 20px;
+  -webkit-justify-content: space-around;
+  -ms-flex-pack: distribute;
+  justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.div-block-55 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  text-align: center;
+}
+
+.slide {
+  height: 100%;
+  background-image: -webkit-gradient(linear, right top, left top, from(rgba(6, 7, 10, 0)), to(rgba(6, 7, 9, 0.75))), url('../images/background2.png');
+  background-image: linear-gradient(270deg, rgba(6, 7, 10, 0), rgba(6, 7, 9, 0.75)), url('../images/background2.png');
+  background-position: 0px 0px, 50% 0%;
+  background-size: auto, cover;
+  background-repeat: repeat, no-repeat;
+}
+
+.slide._3 {
+  background-image: url('../images/620a5882185e7a3b1366250a_AdventuresOfCaptainBlackjack_Background-3.png');
+  background-size: cover;
+}
+
+.image-14 {
+  position: absolute;
+  left: auto;
+  top: 10px;
+  right: 10px;
+  bottom: auto;
+  width: 20%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.image-14.val {
+  width: 15%;
+}
+
+.image-8 {
+  width: 25vw;
+}
+
+.image-8.rock {
+  margin-right: -20px;
+  margin-bottom: -80px;
+}
+
+.image-8.slide-3 {
+  position: absolute;
+  width: 50vw;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: 50% 10%;
+  object-position: 50% 10%;
+}
+
+.div-block-60 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(transparent), to(#360101));
+  background-image: linear-gradient(180deg, transparent, #360101);
+}
+
+.div-block-50 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.div-block-147 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-radius: 8px;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.5)), to(rgba(0, 0, 0, 0.5))), url('../images/7king-casino-png-banner-2.png');
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/7king-casino-png-banner-2.png');
+  background-position: 0px 0px, 50% 50%;
+  background-size: auto, 110% 110%;
+  text-align: center;
+}
+
+.slide-3 {
+  height: 100%;
 }
 
 @media screen and (min-width: 1440px) {
@@ -3895,6 +4426,54 @@ label {
   .modal {
     width: 70%;
   }
+
+  .div-block-54.tiger {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding-left: 0px;
+  }
+
+  .div-block-54.val {
+    overflow: hidden;
+  }
+
+  .div-block-55 {
+    width: 100%;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+
+  .image-14 {
+    left: 10px;
+    top: 10px;
+    right: auto;
+    bottom: auto;
+  }
+
+  .image-14.val {
+    width: 60px;
+  }
+
+  .image-8.rock {
+    position: absolute;
+    left: auto;
+    top: auto;
+    right: 0%;
+    bottom: 0%;
+    z-index: 1;
+    margin-bottom: 0px;
+  }
+
+  .image-8.slide-3 {
+    width: 50vw;
+  }
+
+  .image-13 {
+    width: 50%;
+  }
 }
 
 @media screen and (max-width: 767px) {
@@ -4059,6 +4638,14 @@ label {
 
   .login-head {
     font-size: 20px;
+  }
+
+  .slide._3 {
+    background-position: 50% 50%;
+  }
+
+  .image-13 {
+    min-width: 300px;
   }
 }
 
@@ -4356,6 +4943,15 @@ label {
 
   .login-head {
     font-size: 18px;
+  }
+
+  .image-8.rock {
+    width: 40vw;
+  }
+
+  .image-8.slide-3 {
+    bottom: -35px;
+    width: 1200%;
   }
 }
 
