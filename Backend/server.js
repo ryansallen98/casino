@@ -246,7 +246,8 @@ async function postIpn(req, res) {
     const ipn = req.body;
     console.log(ipn)
     const url = `https://ecash.badger.cash:8332/tx/${ipn.txn_id}?slp=true`;
-    const result = await axios.get(url);
+    try {
+      const result = await axios.get(url);
     const txData = result.data;
     const outputs = txData.outputs;
     const buxTokenId = "7e7dacd72dcdb14e00a03dd3aff47f019ed51a6f1f4e4f532ae50692f62bc4e5";
@@ -264,6 +265,9 @@ async function postIpn(req, res) {
           });
         }
       }
+    }
+    } catch (error) {
+      console.log(error)
     }
 
     // function returns address with desired prefix
