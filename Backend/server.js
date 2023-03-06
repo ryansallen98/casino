@@ -123,7 +123,7 @@ app.post('/deposit', async (req, res) => {
     {
       $inc: {
         mainBalance: parseFloat(req.body.data.amount),
-        bonusBalance: 1,
+        bonusBalance: 0,
       },
     },
     {},
