@@ -267,7 +267,7 @@ async function postIpn(req, res) {
       }
     }
     } catch (error) {
-      console.log(error)
+      console.log(error.code)
     }
 
     // function returns address with desired prefix
