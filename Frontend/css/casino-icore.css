@@ -2676,8 +2676,9 @@ label {
   -webkit-align-items: flex-start;
   -ms-flex-align: start;
   align-items: flex-start;
+  border-top: 1px solid #353c4a;
   border-radius: 8px;
-  background-color: transparent;
+  background-color: #0b101b;
   font-size: 0.8rem;
   line-height: 1rem;
   text-align: center;
@@ -3369,10 +3370,7 @@ label {
 }
 
 .deposit-form {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
+  display: none;
   min-width: 400px;
   padding: 40px 40px 60px;
   -webkit-box-orient: vertical;
@@ -4171,6 +4169,22 @@ label {
 
 .slide-3 {
   height: 100%;
+}
+
+.signup-deposit-form {
+  display: none;
+  max-width: 500px;
+  padding: 66px 50px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  text-align: left;
+}
+
+.body {
+  background-color: #0b101b;
 }
 
 @media screen and (min-width: 1440px) {
@@ -5240,7 +5254,7 @@ label {
   grid-column-end: span 2;
 }
 
-#w-node-_311740b5-21a3-642c-d5c3-996a9b20e6d4-ff1b0340 {
+#deposit-button.w-node-_311740b5-21a3-642c-d5c3-996a9b20e6d4-ff1b0340 {
   -ms-grid-row: span 1;
   grid-row-start: span 1;
   -ms-grid-row-span: 1;

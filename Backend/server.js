@@ -10,7 +10,6 @@ const uri = 'https://bux.digital/v1/pay/?';
 
 const app = express();
 const port = process.env.PORT || 3000;
-
 // Serve static files from the frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
