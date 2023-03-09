@@ -5,8 +5,21 @@ const jwt = require('jsonwebtoken');
 const Datastore = require('nedb');
 const axios = require('axios');
 const ecashaddr = require('ecashaddrjs');
+const jwa = require('jwa');
+const { decodeSubjectChain, calculateNet } = require('relay-jwt');
+require('dotenv').config();
 
-const uri = 'https://bux.digital/v1/pay/?';
+const uri = 'https://base.icorepay.io/v1?';
+
+// create jwa object
+const algorithm = 'ES256';
+const ecdsa = jwa(algorithm);
+
+// decode the JWT
+const token = process.env.JWT;
+const decoded = jwt.decode(token);
+const decodedChain = decodeSubjectChain(decoded.sub, ecdsa.verify);
+console.log("decodedChain", decodedChain);
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -92,12 +105,18 @@ app.post('/deposit', async (req, res) => {
   console.log(req.body.data);
   const code = Math.random().toString(36).substring(7);
   const invoiceId = Math.random().toString(36).substring(7);
+  const buxDecimals = 4;
+  const badgerFixedFee = 0.5;
+  const badgerVarFee = 0.06;
+  const amountWithoutBadgerFees = (req.body.data.amount - badgerFixedFee) / (1 + badgerVarFee);
+  const netAmountForDollar = +calculateNet(amountWithoutBadgerFees, decodedChain, buxDecimals).toFixed(4);
+
   const params = {
     merchant_name: 'iCore Pay',
     invoice: invoiceId,
     order_key: code,
     merchant_addr: req.body.data.token,
-    amount: req.body.data.amount,
+    amount: netAmountForDollar,
     success_url: 'http://44.200.51.117:3000/?success=' + req.body.data.amount,
     cancel_url: 'http://44.200.51.117:3000/?error=error',
     ipn_url: 'http://44.200.51.117:3000/ipn',
@@ -116,7 +135,7 @@ app.post('/deposit', async (req, res) => {
     .join('&');
   // append the query parameters to the URI
   const getUrl = `${uri}${queryParams}`;
-
+  console.log(getUrl)
   usersDB.update(
     { username: req.body.data.user },
     {
@@ -137,12 +156,16 @@ app.post('/deposit', async (req, res) => {
   );
 
   try {
-    const response = await axios.get(getUrl, { mode: 'no-cors' });
+    const response = await axios.get(getUrl, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     response.data.user = req.body.data.user;
     invoiceDB.insert(response.data);
     let payURL = response.data.paymentUrl;
     console.log(response.data)
-    
+
     res.json({ payURL });
   } catch (error) {
     console.log(error.code);
@@ -205,7 +228,7 @@ app.post('/signup-bonus', async (req, res) => {
     invoiceDB.insert(response.data);
     let payURL = response.data.paymentUrl;
     console.log(response.data)
-    
+
     res.json({ payURL });
   } catch (error) {
     console.log(error.code);
