@@ -22,7 +22,7 @@ const decodedChain = decodeSubjectChain(decoded.sub, ecdsa.verify);
 console.log("decodedChain", decodedChain);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 // Serve static files from the frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
