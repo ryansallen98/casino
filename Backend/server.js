@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const https = require('https');
+const fs = require('fs');
 const Datastore = require('nedb');
 const axios = require('axios');
 const ecashaddr = require('ecashaddrjs');
@@ -25,6 +27,12 @@ const app = express();
 const port = process.env.PORT || 80;
 // Serve static files from the frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
+
+const options = {
+  key: fs.readFileSync('/etc/letsencrypt/live/casino.demo.icore.pay/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/casino.demo.icore.pay/fullchain.pem'),
+  ca: fs.readFileSync('/etc/letsencrypt/live/casino.demo.icore.pay/chain.pem')
+};
 
 // Middleware to parse JSON request body
 app.use(bodyParser.json());
@@ -341,6 +349,6 @@ async function postIpn(req, res) {
 app.post('/ipn', postIpn);
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+https.createServer(options, app).listen(443, () => {
+  console.log('Server started on port 443 (HTTPS)');
 });
