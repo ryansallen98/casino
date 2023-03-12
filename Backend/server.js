@@ -117,9 +117,9 @@ app.post('/deposit', async (req, res) => {
     order_key: code,
     merchant_addr: req.body.data.token,
     amount: netAmountForDollar,
-    success_url: 'http://44.200.51.117:3000/?success=' + req.body.data.amount,
-    cancel_url: 'http://44.200.51.117:3000/?error=error',
-    ipn_url: 'http://44.200.51.117:3000/ipn',
+    success_url: 'http://casino.demo.icorepay.io/?success=' + req.body.data.amount,
+    cancel_url: 'http://casino.demo.icorepay.io/?error=error',
+    ipn_url: 'http://casino.demo.icorepay.io/ipn',
     return_json: true,
   };
 
@@ -333,7 +333,7 @@ app.post('/signup-bonus', async (req, res) => {
 // }
 
 async function postIpn(req, res) {
-  console.log(req);
+  console.log(req.body);
   res.send('Received POST request');
 }
 
